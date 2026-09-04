@@ -579,6 +579,29 @@
         // ==========================================
         // TAB 1: SENIORITY CODE
         // ==========================================
+        function formatThaiDate(isoStr) {
+            if (!isoStr) return '-';
+            const parts = isoStr.split('-');
+            if (parts.length < 3) return isoStr;
+            const year = parseInt(parts[0]) + 543;
+            const months = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            const month = months[parseInt(parts[1])] || parts[1];
+            const day = parseInt(parts[2]);
+            return `${day} ${month} ${year}`;
+        }
+
+        function formatTenureYMD(yearsDecimal) {
+            if (!yearsDecimal || isNaN(yearsDecimal)) return '0 ปี';
+            const y = Math.floor(yearsDecimal);
+            const remMonths = (yearsDecimal - y) * 12;
+            const m = Math.floor(remMonths);
+            const d = Math.round((remMonths - m) * 30);
+            let res = `${y} ปี`;
+            if (m > 0) res += ` ${m} ด.`;
+            if (d > 0) res += ` ${d} ว.`;
+            return res;
+        }
+
         const tableBody = document.getElementById('officersTableBody');
         const searchInput = document.getElementById('searchInput');
         const levelFilter = document.getElementById('levelFilter');
@@ -683,7 +706,7 @@
                             <span class="inline-block px-2 py-0.5 rounded text-xs bg-slate-700/60 text-slate-300">${officer.role_type || 'ทั่วไป'}</span>
                         </td>
                         <td class="px-4 py-3.5 text-center">
-                            <div class="font-semibold text-white">${officer.current_rank_tenure_years || 0} ปี</div>
+                            <div class="font-semibold text-white text-xs sm:text-sm whitespace-nowrap">${formatTenureYMD(officer.current_rank_tenure_years)}</div>
                             <div class="text-[11px] text-slate-400">เกณฑ์ ${officer.required_tenure_years} ปี</div>
                         </td>
                         <td class="px-4 py-3.5 text-center">${tenureBadge}</td>
@@ -987,29 +1010,7 @@
 
         // ==========================================
         // MODAL & GENERAL LISTENERS
-        function formatThaiDate(isoStr) {
-            if (!isoStr) return '-';
-            const parts = isoStr.split('-');
-            if (parts.length < 3) return isoStr;
-            const year = parseInt(parts[0]) + 543;
-            const months = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-            const month = months[parseInt(parts[1])] || parts[1];
-            const day = parseInt(parts[2]);
-            return `${day} ${month} ${year}`;
-        }
-
-        function formatTenureYMD(yearsDecimal) {
-            if (!yearsDecimal || isNaN(yearsDecimal)) return '0 ปี';
-            const y = Math.floor(yearsDecimal);
-            const remMonths = (yearsDecimal - y) * 12;
-            const m = Math.floor(remMonths);
-            const d = Math.round((remMonths - m) * 30);
-            let res = `${y} ปี`;
-            if (m > 0) res += ` ${m} เดือน`;
-            if (d > 0) res += ` ${d} วัน`;
-            return res;
-        }
-
+        // ==========================================
         function openModal(id) {
             const officer = allOfficers.find(o => o.id === id);
             if (!officer) return;
