@@ -987,53 +987,98 @@
 
         // ==========================================
         // MODAL & GENERAL LISTENERS
-        // ==========================================
+        function formatThaiDate(isoStr) {
+            if (!isoStr) return '-';
+            const parts = isoStr.split('-');
+            if (parts.length < 3) return isoStr;
+            const year = parseInt(parts[0]) + 543;
+            const months = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            const month = months[parseInt(parts[1])] || parts[1];
+            const day = parseInt(parts[2]);
+            return `${day} ${month} ${year}`;
+        }
+
+        function formatTenureYMD(yearsDecimal) {
+            if (!yearsDecimal || isNaN(yearsDecimal)) return '0 ปี';
+            const y = Math.floor(yearsDecimal);
+            const remMonths = (yearsDecimal - y) * 12;
+            const m = Math.floor(remMonths);
+            const d = Math.round((remMonths - m) * 30);
+            let res = `${y} ปี`;
+            if (m > 0) res += ` ${m} เดือน`;
+            if (d > 0) res += ` ${d} วัน`;
+            return res;
+        }
+
         function openModal(id) {
             const officer = allOfficers.find(o => o.id === id);
             if (!officer) return;
 
             const modalBody = document.getElementById('modalBody');
+            const tenureText = formatTenureYMD(officer.current_rank_tenure_years);
+            const totalServiceText = formatTenureYMD(officer.total_service_years);
+
             modalBody.innerHTML = `
-                <div class="text-center pb-4 border-b border-slate-700">
-                    <div class="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center mx-auto mb-2 text-2xl text-amber-400">
+                <div class="text-center pb-3 border-b border-slate-700">
+                    <div class="w-14 h-14 rounded-full bg-slate-700/80 border border-amber-500/40 flex items-center justify-center mx-auto mb-2 text-2xl text-amber-400">
                         <i class="fa-solid fa-user-shield"></i>
                     </div>
                     <h4 class="text-lg font-bold text-white">${officer.rank} ${officer.full_name}</h4>
-                    <p class="text-xs text-amber-400 font-medium">${officer.position}</p>
+                    <p class="text-xs text-amber-300 font-medium mt-0.5">${officer.position}</p>
+                    <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] bg-slate-800 text-slate-300 border border-slate-600">
+                        ${officer.province || 'ตำรวจภูธรภาค 1'} • สายงาน: ${officer.role_type || officer.job_family || 'ทั่วไป'}
+                    </span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 pt-2">
-                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
-                        <div class="text-[11px] text-slate-400">ลำดับอาวุโสในระดับ</div>
-                        <div class="text-base font-bold text-amber-300">#${officer.seniority_rank_in_level} (${officer.level})</div>
+                <div class="grid grid-cols-2 gap-2.5 pt-3 text-xs">
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80">
+                        <div class="text-[11px] text-slate-400 mb-0.5">ลำดับอาวุโสรวม (ทั้ง บช.ภ.1)</div>
+                        <div class="text-base font-extrabold text-amber-300">#${officer.seniority_rank_in_level} <span class="text-xs font-normal text-slate-400">ในระดับ ${officer.level}</span></div>
                     </div>
-                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
-                        <div class="text-[11px] text-slate-400">เป้าหมายการแต่งตั้ง</div>
-                        <div class="text-base font-bold text-emerald-300">${officer.target_promotion || '-'}</div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80">
+                        <div class="text-[11px] text-slate-400 mb-0.5">เป้าหมายการเลื่อนตำแหน่ง</div>
+                        <div class="text-base font-extrabold text-emerald-300">${officer.target_promotion || '-'}</div>
                     </div>
-                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
-                        <div class="text-[11px] text-slate-400">ครองตำแหน่งจริง</div>
-                        <div class="text-sm font-semibold text-white">${officer.current_rank_tenure_years || 0} ปี (เกณฑ์ ${officer.required_tenure_years} ปี)</div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80">
+                        <div class="text-[11px] text-slate-400 mb-0.5">ระยะเวลาครองตำแหน่งปัจจุบัน</div>
+                        <div class="text-sm font-bold text-white">${tenureText}</div>
+                        <div class="text-[10px] text-emerald-400 mt-0.5">✅ เกณฑ์ขั้นต่ำ ${officer.required_tenure_years} ปี (ครบเกณฑ์)</div>
                     </div>
-                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
-                        <div class="text-[11px] text-slate-400">อายุราชการสัญญาบัตร</div>
-                        <div class="text-sm font-semibold text-white">${officer.total_service_years || 0} ปี</div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80">
+                        <div class="text-[11px] text-slate-400 mb-0.5">อายุราชการชั้นสัญญาบัตร</div>
+                        <div class="text-sm font-bold text-white">${totalServiceText}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">นับแต่วันแต่งตั้ง ร.ต.ต.</div>
                     </div>
-                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
-                        <div class="text-[11px] text-slate-400">อายุตัว</div>
-                        <div class="text-sm font-semibold text-white">${officer.age_years || '-'} ปี</div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80">
+                        <div class="text-[11px] text-slate-400 mb-0.5">อายุตัวปัจจุบัน</div>
+                        <div class="text-sm font-bold text-white">${officer.age_years || '-'} ปี</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">เกิด: ${formatThaiDate(officer.birth_date_iso)}</div>
                     </div>
-                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
-                        <div class="text-[11px] text-slate-400">ปีเกษียณอายุราชการ</div>
-                        <div class="text-sm font-semibold text-amber-400 font-mono">พ.ศ. ${officer.retirement_year_be || '-'} (เหลือ ${officer.years_until_retirement || '-'} ปี)</div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/80">
+                        <div class="text-[11px] text-slate-400 mb-0.5">กำหนดเกษียณอายุราชการ</div>
+                        <div class="text-sm font-bold text-amber-400 font-mono">30 ก.ย. ${officer.retirement_year_be || '-'}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">เหลืออายุราชการ ${Math.round(officer.years_until_retirement || 0)} ปี</div>
                     </div>
                 </div>
 
-                <div class="bg-slate-900/70 p-3 rounded-lg border border-slate-700 text-xs space-y-1.5">
-                    <div class="font-semibold text-slate-300">วันที่มีผลครองตำแหน่งในอดีต (ISO):</div>
-                    <div class="flex justify-between text-slate-400"><span>ครอง รอง ผกก.:</span> <span class="font-mono text-slate-200">${officer.deputy_date_iso || '-'}</span></div>
-                    <div class="flex justify-between text-slate-400"><span>ครอง สารวัตร (สว.):</span> <span class="font-mono text-slate-200">${officer.insp_date_iso || '-'}</span></div>
-                    <div class="flex justify-between text-slate-400"><span>ครอง รอง สว. (สัญญาบัตร):</span> <span class="font-mono text-slate-200">${officer.subinsp_date_iso || '-'}</span></div>
+                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 text-xs space-y-2">
+                    <div class="font-bold text-slate-200 border-b border-slate-800 pb-1 flex items-center justify-between">
+                        <span><i class="fa-regular fa-calendar-check mr-1 text-amber-400"></i> วันที่มีผลครองตำแหน่ง (ปฏิทินไทย):</span>
+                        <span class="text-[10px] text-slate-500 font-mono">Official Record</span>
+                    </div>
+                    ${officer.deputy_date_iso ? `
+                    <div class="flex justify-between items-center text-slate-300">
+                        <span>วันแต่งตั้ง รอง ผกก.:</span>
+                        <span class="font-semibold text-white bg-slate-800 px-2 py-0.5 rounded border border-slate-700">${formatThaiDate(officer.deputy_date_iso)}</span>
+                    </div>` : ''}
+                    <div class="flex justify-between items-center text-slate-300">
+                        <span>วันแต่งตั้ง สารวัตร (สว.):</span>
+                        <span class="font-semibold text-white bg-slate-800 px-2 py-0.5 rounded border border-slate-700">${formatThaiDate(officer.insp_date_iso)}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-slate-300">
+                        <span>วันแต่งตั้ง รอง สว. (เริ่มสัญญาบัตร):</span>
+                        <span class="font-semibold text-white bg-slate-800 px-2 py-0.5 rounded border border-slate-700">${formatThaiDate(officer.subinsp_date_iso)}</span>
+                    </div>
                 </div>
             `;
             document.getElementById('officerModal').classList.remove('hidden');
