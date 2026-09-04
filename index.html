@@ -64,7 +64,7 @@
                     </div>
                     <div>
                         <span class="text-lg font-bold tracking-wide text-white block leading-tight">
-                            ตำรวจภูธรภาค 1 (ภ.1) <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-mono">v2.5 (อัปเดตเกณฑ์ใหม่)</span>
+                            ตำรวจภูธรภาค 1 (ภ.1) <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-mono">v2.6 (แสดงวันเกิด/เกษียณ)</span>
                         </span>
                         <span class="text-xs text-amber-400 font-medium">
                             ศูนย์บัญชาการข้อมูลอาวุโส • เกษียณ 2570 • 144 สภ. • รุ่น นรต./ตท.
@@ -265,14 +265,15 @@
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="bg-slate-900/90 text-xs uppercase text-slate-400 border-b border-slate-700">
                             <tr>
-                                <th class="px-4 py-3.5 text-center w-16">อันดับ</th>
+                                <th class="px-3 py-3.5 text-center w-16">อันดับ</th>
                                 <th class="px-4 py-3.5">ยศ - ชื่อ - สกุล</th>
                                 <th class="px-4 py-3.5">ตำแหน่ง / สังกัด</th>
-                                <th class="px-4 py-3.5 text-center">สายงาน</th>
-                                <th class="px-4 py-3.5 text-center">ครองตำแหน่งจริง</th>
-                                <th class="px-4 py-3.5 text-center">คุณสมบัติ</th>
-                                <th class="px-4 py-3.5 text-center">เกษียณ</th>
-                                <th class="px-4 py-3.5 text-center w-20">ดูข้อมูล</th>
+                                <th class="px-3 py-3.5 text-center">สายงาน</th>
+                                <th class="px-3 py-3.5 text-center">ครองตำแหน่งจริง</th>
+                                <th class="px-3 py-3.5 text-center">วันเกิด / อายุตัว</th>
+                                <th class="px-3 py-3.5 text-center">วันเกษียณ (เหลือ)</th>
+                                <th class="px-3 py-3.5 text-center">คุณสมบัติ</th>
+                                <th class="px-3 py-3.5 text-center w-16">ประวัติ</th>
                             </tr>
                         </thead>
                         <tbody id="officersTableBody" class="divide-y divide-slate-700/60">
@@ -675,7 +676,7 @@
 
         function renderSeniorityTable(list, quota) {
             if (list.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">ไม่พบข้อมูลที่ค้นหา</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">ไม่พบข้อมูลที่ค้นหา</td></tr>`;
                 return;
             }
 
@@ -696,7 +697,7 @@
 
                 html += `
                     <tr class="${rowClass} transition cursor-pointer" onclick="openModal(${officer.id})">
-                        <td class="px-4 py-3.5 text-center font-bold text-slate-200">${rankBadge}</td>
+                        <td class="px-3 py-3.5 text-center font-bold text-slate-200">${rankBadge}</td>
                         <td class="px-4 py-3.5">
                             <div class="font-bold text-white">${officer.rank} ${officer.full_name}</div>
                             <div class="text-xs text-slate-400 mt-0.5">${officer.level} (${officer.target_promotion ? 'เลื่อนขึ้น ' + officer.target_promotion : ''})</div>
@@ -705,16 +706,23 @@
                             <div class="text-xs sm:text-sm text-slate-200 font-medium">${officer.position}</div>
                             <div class="text-xs text-amber-400/80 mt-0.5">${officer.province || ''}</div>
                         </td>
-                        <td class="px-4 py-3.5 text-center">
+                        <td class="px-3 py-3.5 text-center">
                             <span class="inline-block px-2 py-0.5 rounded text-xs bg-slate-700/60 text-slate-300">${officer.role_type || 'ทั่วไป'}</span>
                         </td>
-                        <td class="px-4 py-3.5 text-center">
-                            <div class="font-semibold text-white text-xs sm:text-sm whitespace-nowrap">${formatTenureYMD(officer.current_rank_tenure_years)}</div>
+                        <td class="px-3 py-3.5 text-center">
+                            <div class="font-semibold text-white text-xs whitespace-nowrap">${formatTenureYMD(officer.current_rank_tenure_years)}</div>
                             <div class="text-[11px] text-slate-400">เกณฑ์ ${officer.required_tenure_years} ปี</div>
                         </td>
-                        <td class="px-4 py-3.5 text-center">${tenureBadge}</td>
-                        <td class="px-4 py-3.5 text-center text-xs text-slate-300 font-mono">${officer.retirement_year_be || '-'}</td>
-                        <td class="px-4 py-3.5 text-center">
+                        <td class="px-3 py-3.5 text-center">
+                            <div class="font-medium text-slate-200 text-xs whitespace-nowrap">${formatThaiDate(officer.birth_date_iso)}</div>
+                            <div class="text-[11px] text-amber-300/90 font-semibold">อายุ ${officer.age_years || '-'} ปี</div>
+                        </td>
+                        <td class="px-3 py-3.5 text-center">
+                            <div class="font-semibold text-amber-400 font-mono text-xs whitespace-nowrap">30 ก.ย. ${officer.retirement_year_be || '-'}</div>
+                            <div class="text-[11px] text-slate-400">เหลือ ${Math.round(officer.years_until_retirement || 0)} ปี</div>
+                        </td>
+                        <td class="px-3 py-3.5 text-center">${tenureBadge}</td>
+                        <td class="px-3 py-3.5 text-center">
                             <button class="text-amber-400 hover:text-amber-300 transition text-sm">
                                 <i class="fa-solid fa-circle-info text-base"></i>
                             </button>
