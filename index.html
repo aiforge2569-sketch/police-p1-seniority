@@ -413,7 +413,7 @@
                     <div class="text-center">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/40 mb-2">
                             <i class="fa-solid fa-calculator"></i>
-                            <span>เครื่องคำนวณสูตรความสัมพันธ์รุ่นคงที่</span>
+                            <span>เครื่องคำนวณสูตรความสัมพันธ์รุ่น นรต. 1 ถึง ปัจจุบัน (นรต. 83)</span>
                         </span>
                         <h3 class="text-2xl font-bold text-white">เทียบรุ่น นรต. (นายร้อยตำรวจ) ↔ ตท. (เตรียมทหาร)</h3>
                         <p class="text-xs text-slate-400 mt-1">สูตรคณิตศาสตร์: นรต. = ตท. + 16 | ตท. = นรต. - 16 | ปีจบ พ.ศ. = นรต. + 2490</p>
@@ -443,14 +443,33 @@
                 </div>
             </div>
 
+            <!-- RPCA Quick Filters & Search -->
+            <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 space-y-3">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                        <input id="rpcaSearchInput" type="text" placeholder="พิมพ์ค้นหาเลขรุ่น, ปี พ.ศ., หรือชื่อบุคคลสำคัญ (เช่น กิตติ์รัฐ, นราเดช, นิรุธ)..."
+                               class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-purple-400">
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button onclick="filterRpcaCategory('ALL')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-950 text-purple-300 border border-purple-700 hover:bg-purple-900 transition">ทั้งหมด (1-83)</button>
+                        <button onclick="filterRpcaCategory('LEADERS')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">👑 ผู้นำ ตร./ภ.1 (35-45)</button>
+                        <button onclick="filterRpcaCategory('COMMANDERS')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">🏛️ ผบก./ผกก. (46-54)</button>
+                        <button onclick="filterRpcaCategory('DEPUTIES')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">👮 รอง ผกก./สว. (55-65)</button>
+                        <button onclick="filterRpcaCategory('ACTIVE')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">🌟 รอง สว. ถึงปีนี้ (66-79)</button>
+                        <button onclick="filterRpcaCategory('STUDENTS')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">🎓 นรต. ปัจจุบัน (80-83)</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- RPCA Directory Table -->
             <div class="bg-slate-800/90 border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
                 <div class="px-5 py-4 border-b border-slate-700 flex justify-between items-center">
                     <h3 class="font-bold text-white text-sm flex items-center gap-2">
                         <i class="fa-solid fa-users text-purple-400"></i>
-                        <span>ทำเนียบความสัมพันธ์รุ่น นรต. 25 ถึง นรต. 75</span>
+                        <span>ทำเนียบความสัมพันธ์รุ่น นรต. 1 ถึง นรต. 83 (ปัจจุบันและอนาคต)</span>
                     </h3>
-                    <span class="text-xs bg-slate-700 text-slate-300 font-semibold px-2.5 py-0.5 rounded-full">51 รุ่น</span>
+                    <span id="rpcaFilteredCount" class="text-xs bg-slate-700 text-slate-300 font-semibold px-2.5 py-0.5 rounded-full">83 รุ่น</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
@@ -461,6 +480,7 @@
                                 <th class="px-4 py-3 text-center">ปีจบ พ.ศ.</th>
                                 <th class="px-4 py-3">ระดับบทบาทในวงการตำรวจ</th>
                                 <th class="px-4 py-3">บุคคลสำคัญ / ตัวอย่างศิษย์เก่า</th>
+                                <th class="px-4 py-3 text-center w-16">คำนวณ</th>
                             </tr>
                         </thead>
                         <tbody id="rpcaTableBody" class="divide-y divide-slate-700/60">
@@ -805,14 +825,17 @@
         const gradYearInput = document.getElementById('gradYearInput');
         const rpcaResultBox = document.getElementById('rpcaResultBox');
         const rpcaTableBody = document.getElementById('rpcaTableBody');
+        const rpcaSearchInput = document.getElementById('rpcaSearchInput');
+        const rpcaFilteredCount = document.getElementById('rpcaFilteredCount');
+        let currentRpcaCategory = 'ALL';
 
         function updateRpcaCalc(source) {
             let rpcaVal = parseInt(rpcaInput.value) || 0;
             let afapsVal = parseInt(afapsInput.value) || 0;
 
             if (source === 'rpca') {
-                afapsVal = rpcaVal - 16;
-                afapsInput.value = afapsVal;
+                afapsVal = rpcaVal >= 17 ? rpcaVal - 16 : 0;
+                afapsInput.value = afapsVal > 0 ? afapsVal : '-';
             } else {
                 rpcaVal = afapsVal + 16;
                 rpcaInput.value = rpcaVal;
@@ -824,18 +847,95 @@
             // Find key figures if any
             const found = allRpca.find(r => r.rpca_class === rpcaVal);
             const keyFig = found && found.key_figures !== '-' ? found.key_figures : 'ข้อมูลเครือข่ายข้าราชการตำรวจประจำรุ่น';
-            const era = found ? found.era_description : 'รุ่นนายร้อยตำรวจ';
+            const era = found ? found.era_description : (rpcaVal >= 80 ? 'นรต. ปัจจุบัน รร.นายร้อยตำรวจ สามพราน' : 'รุ่นนายร้อยตำรวจ');
+
+            const afapsText = afapsVal > 0 ? `เตรียมทหารรุ่นที่ <strong>${afapsVal}</strong>` : '<em>ก่อนตั้ง รร.เตรียมทหาร</em>';
 
             rpcaResultBox.innerHTML = `
                 <div class="font-bold text-white flex items-center gap-2">
                     <span class="text-amber-400">✨ ความสัมพันธ์:</span>
-                    <span>นักเรียนนายร้อยตำรวจรุ่นที่ <strong>${rpcaVal}</strong> = เตรียมทหารรุ่นที่ <strong>${afapsVal}</strong></span>
+                    <span>นักเรียนนายร้อยตำรวจรุ่นที่ <strong>${rpcaVal}</strong> = ${afapsText}</span>
                 </div>
                 <div class="text-xs text-purple-300 mt-1">📅 จบการศึกษาและบรรจุติดยศ ร.ต.ต. ในปี พ.ศ. <strong>${gradYear}</strong> (${era})</div>
                 <div class="text-xs text-slate-300 mt-2 bg-slate-900/80 p-2.5 rounded-lg border border-purple-800/40">
                     <strong class="text-amber-300">👑 บุคคลสำคัญและเครือข่ายรุ่น:</strong> ${keyFig}
                 </div>
             `;
+        }
+
+        function setRpcaFromTable(rpcaVal) {
+            rpcaInput.value = rpcaVal;
+            updateRpcaCalc('rpca');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filterRpcaCategory(cat) {
+            currentRpcaCategory = cat;
+            document.querySelectorAll('.rpca-cat-btn').forEach(b => {
+                b.classList.remove('bg-purple-950', 'text-purple-300', 'border-purple-700');
+                b.classList.add('bg-slate-900', 'text-slate-300', 'border-slate-700');
+            });
+            event.target.classList.remove('bg-slate-900', 'text-slate-300', 'border-slate-700');
+            event.target.classList.add('bg-purple-950', 'text-purple-300', 'border-purple-700');
+            applyRpcaFilters();
+        }
+
+        function applyRpcaFilters() {
+            const query = (rpcaSearchInput ? rpcaSearchInput.value.trim().toLowerCase() : '');
+
+            const filtered = allRpca.filter(r => {
+                // Category Filter
+                if (currentRpcaCategory === 'LEADERS' && (r.rpca_class < 35 || r.rpca_class > 45)) return false;
+                if (currentRpcaCategory === 'COMMANDERS' && (r.rpca_class < 46 || r.rpca_class > 54)) return false;
+                if (currentRpcaCategory === 'DEPUTIES' && (r.rpca_class < 55 || r.rpca_class > 65)) return false;
+                if (currentRpcaCategory === 'ACTIVE' && (r.rpca_class < 66 || r.rpca_class > 79)) return false;
+                if (currentRpcaCategory === 'STUDENTS' && (r.rpca_class < 80 || r.rpca_class > 83)) return false;
+
+                // Text Search
+                if (query) {
+                    const text = `นรต. ${r.rpca_class} ตท. ${r.afaps_class} ${r.grad_year_be} ${r.era_description} ${r.key_figures}`.toLowerCase();
+                    if (!text.includes(query)) return false;
+                }
+                return true;
+            });
+
+            if (rpcaFilteredCount) rpcaFilteredCount.innerText = `${filtered.length} รุ่น`;
+
+            if (filtered.length === 0) {
+                rpcaTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-400">ไม่พบรุ่น นรต. ที่ค้นหา</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(r => {
+                const isKey = r.key_figures && r.key_figures !== '-';
+                const isCurrent = r.rpca_class === 79;
+                const rowClass = isCurrent 
+                    ? 'bg-amber-950/40 border-l-4 border-amber-400' 
+                    : (isKey ? 'bg-purple-950/25' : '');
+
+                const afapsDisplay = r.afaps_class > 0 ? `ตท. ${r.afaps_class}` : '<span class="text-slate-500 text-xs">ก่อนมี ตท.</span>';
+
+                html += `
+                    <tr class="${rowClass} hover:bg-slate-800/60 transition cursor-pointer" onclick="setRpcaFromTable(${r.rpca_class})">
+                        <td class="px-4 py-3 text-center font-bold text-purple-300">
+                            ${isCurrent ? '<span class="inline-flex items-center gap-1 text-amber-300 font-extrabold">นรต. ' + r.rpca_class + ' 🌟</span>' : 'นรต. ' + r.rpca_class}
+                        </td>
+                        <td class="px-4 py-3 text-center font-bold text-amber-300">${afapsDisplay}</td>
+                        <td class="px-4 py-3 text-center font-mono text-emerald-300">${r.grad_year_be}</td>
+                        <td class="px-4 py-3 text-xs text-slate-300">${r.era_description || '-'}</td>
+                        <td class="px-4 py-3 text-xs text-slate-200">
+                            ${r.key_figures && r.key_figures !== '-' ? `<span class="text-amber-300 font-semibold">${r.key_figures}</span>` : '<span class="text-slate-500">-</span>'}
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <button class="text-purple-400 hover:text-purple-300 text-xs py-1 px-2 rounded bg-purple-950/80 border border-purple-800">
+                                เทียบ
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            rpcaTableBody.innerHTML = html;
         }
 
         async function fetchRpca() {
@@ -848,26 +948,13 @@
                 if (error) throw error;
                 allRpca = data || [];
                 updateRpcaCalc('rpca');
-
-                let html = '';
-                allRpca.forEach(r => {
-                    const isKey = r.key_figures && r.key_figures !== '-';
-                    const rowClass = isKey ? 'bg-purple-950/20 font-medium' : '';
-                    html += `
-                        <tr class="${rowClass} hover:bg-slate-800/60 transition">
-                            <td class="px-4 py-3 text-center font-bold text-purple-300">นรต. ${r.rpca_class}</td>
-                            <td class="px-4 py-3 text-center font-bold text-amber-300">ตท. ${r.afaps_class}</td>
-                            <td class="px-4 py-3 text-center font-mono text-emerald-300">${r.grad_year_be}</td>
-                            <td class="px-4 py-3 text-xs text-slate-300">${r.era_description || '-'}</td>
-                            <td class="px-4 py-3 text-xs text-slate-200">${r.key_figures && r.key_figures !== '-' ? `<span class="text-amber-300 font-semibold">${r.key_figures}</span>` : '<span class="text-slate-500">-</span>'}</td>
-                        </tr>
-                    `;
-                });
-                rpcaTableBody.innerHTML = html;
+                applyRpcaFilters();
             } catch (err) {
                 console.error('Fetch rpca error:', err);
             }
         }
+
+        if (rpcaSearchInput) rpcaSearchInput.addEventListener('input', applyRpcaFilters);
 
         rpcaInput.addEventListener('input', () => updateRpcaCalc('rpca'));
         afapsInput.addEventListener('input', () => updateRpcaCalc('afaps'));
