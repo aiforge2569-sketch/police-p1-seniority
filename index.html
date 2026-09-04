@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบศูนย์บัญชาการข้อมูลอาวุโส ตำรวจภูธรภาค 1 (ภ.1)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS Client v2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Sarabun', 'sans-serif'],
+                    },
+                    colors: {
+                        police: {
+                            900: '#0b132b',
+                            800: '#1c2541',
+                            700: '#3a506b',
+                            gold: '#f59e0b',
+                            crimson: '#991b1b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; }
+        .gold-glow { box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+        .badge-quota { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-police-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-shield-halved text-police-900 text-xl font-bold"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold tracking-wide text-white block leading-tight">
+                            ตำรวจภูธรภาค 1 (ภ.1)
+                        </span>
+                        <span class="text-xs text-amber-400 font-medium">
+                            ระบบบัญชีอาวุโสและตรวจสอบโควตาแต่งตั้ง 33%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <span id="connStatus" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-950 text-emerald-300 border border-emerald-800">
+                        <span class="w-2 h-2 mr-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                        Supabase Online
+                    </span>
+                    <a href="https://github.com" target="_blank" class="text-slate-400 hover:text-white transition text-sm hidden sm:inline-flex items-center gap-1">
+                        <i class="fa-brands fa-github text-base"></i>
+                        <span>GitHub Pages</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
+
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 shadow-sm">
+                <div class="text-slate-400 text-xs font-medium uppercase tracking-wider">กำลังพลในบัญชี ภ.1</div>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statTotal" class="text-2xl sm:text-3xl font-extrabold text-white">266</span>
+                    <span class="text-xs text-slate-400">นาย</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1">3 ระดับชั้นตำแหน่งหลัก</div>
+            </div>
+
+            <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 shadow-sm">
+                <div class="text-amber-400 text-xs font-medium uppercase tracking-wider">รอง ผกก. (ขึ้น ผกก.)</div>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statDeputy" class="text-2xl sm:text-3xl font-extrabold text-amber-300">46</span>
+                    <span class="text-xs text-slate-400">เกณฑ์ 4 ปี</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1">อันดับอาวุโสสูงสุด ภ.1</div>
+            </div>
+
+            <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 shadow-sm">
+                <div class="text-blue-400 text-xs font-medium uppercase tracking-wider">สว. (ขึ้น รอง ผกก.)</div>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statInsp" class="text-2xl sm:text-3xl font-extrabold text-blue-300">69</span>
+                    <span class="text-xs text-slate-400">เกณฑ์ 5 ปี</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1">โควตา 33% ล้วน</div>
+            </div>
+
+            <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 shadow-sm">
+                <div class="text-purple-400 text-xs font-medium uppercase tracking-wider">รอง สว. (ขึ้น สว.)</div>
+                <div class="mt-2 flex items-baseline justify-between">
+                    <span id="statSubInsp" class="text-2xl sm:text-3xl font-extrabold text-purple-300">151</span>
+                    <span class="text-xs text-slate-400">เกณฑ์ 7 ปี</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1">เริ่มต้นชั้นสัญญาบัตร</div>
+            </div>
+        </div>
+
+        <!-- Quota 33% Simulator Banner -->
+        <div class="bg-gradient-to-r from-police-800 via-police-900 to-slate-900 border border-amber-500/30 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+            <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 mb-2">
+                        <i class="fa-solid fa-calculator"></i>
+                        <span>เครื่องคำนวณโควตาอาวุโส 33% อัตโนมัติ</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">จำลองสิทธิ์การเลื่อนตำแหน่งตามโควตาอาวุโส (กฎ ก.ตร.)</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">ระบุจำนวนตำแหน่งว่างคาดการณ์ ระบบจะตัดยอด 33% และไฮไลต์รายชื่อที่การันตีได้ทันที</p>
+                </div>
+
+                <div class="flex items-center gap-3 bg-slate-900/80 border border-slate-700 rounded-xl p-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">ตำแหน่งว่างคาดการณ์</label>
+                        <input id="vacanciesInput" type="number" min="0" max="100" value="10" 
+                               class="w-24 bg-slate-800 text-amber-300 text-center font-bold text-lg rounded-lg border border-slate-600 focus:border-amber-400 focus:outline-none py-1">
+                    </div>
+                    <div class="border-l border-slate-700 pl-3">
+                        <span class="block text-xs text-slate-400 mb-1">โควตาอาวุโส 33%</span>
+                        <span id="quotaCalcResult" class="text-xl font-extrabold text-amber-400">4</span>
+                        <span class="text-xs text-slate-400">นาย</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 shadow-sm space-y-4">
+            <!-- Search Bar -->
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                <input id="searchInput" type="text" placeholder="พิมพ์ชื่อ-นามสกุล, ยศ, สภ., หรือหน่วยงานเพื่อค้นหา..."
+                       class="w-full bg-slate-900/90 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
+            </div>
+
+            <!-- Filter Buttons & Dropdowns -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- Level Filter -->
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1 font-medium">ระดับตำแหน่ง</label>
+                    <select id="levelFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-400">
+                        <option value="ALL">-- ทุกระดับตำแหน่ง (266 นาย) --</option>
+                        <option value="รอง ผกก.">รอง ผกก. (เลื่อนขึ้น ผกก. - 46 นาย)</option>
+                        <option value="สว.">สว. (เลื่อนขึ้น รอง ผกก. - 69 นาย)</option>
+                        <option value="รอง สว.">รอง สว. (เลื่อนขึ้น สว. - 151 นาย)</option>
+                    </select>
+                </div>
+
+                <!-- Province Filter -->
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1 font-medium">จังหวัดสังกัด (ภ.1)</label>
+                    <select id="provinceFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-400">
+                        <option value="ALL">-- ทุกจังหวัด (9 จังหวัด) --</option>
+                        <option value="พระนครศรีอยุธยา">พระนครศรีอยุธยา</option>
+                        <option value="นนทบุรี">นนทบุรี</option>
+                        <option value="ปทุมธานี">ปทุมธานี</option>
+                        <option value="สมุทรปราการ">สมุทรปราการ</option>
+                        <option value="สระบุรี">สระบุรี</option>
+                        <option value="ลพบุรี">ลพบุรี</option>
+                        <option value="อ่างทอง">อ่างทอง</option>
+                        <option value="ชัยนาท">ชัยนาท</option>
+                        <option value="สิงห์บุรี">สิงห์บุรี</option>
+                    </select>
+                </div>
+
+                <!-- Job Family Filter -->
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1 font-medium">กลุ่มสายงาน (พ.ร.บ.ตำรวจฯ 2565)</label>
+                    <select id="jobFamilyFilter" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-amber-400">
+                        <option value="ALL">-- ทุกกลุ่มสายงาน --</option>
+                        <option value="สอบสวน">งานสอบสวน</option>
+                        <option value="สืบสวน">งานสืบสวน</option>
+                        <option value="ป้องกันปราบปราม">ป้องกันปราบปราม (ปป.)</option>
+                        <option value="อำนวยการ">อำนวยการ (อก.)</option>
+                        <option value="จราจร">จราจร</option>
+                    </select>
+                </div>
+
+                <!-- Quota Only Toggle -->
+                <div class="flex flex-col justify-end">
+                    <label class="flex items-center space-x-2 bg-slate-900/80 border border-slate-700 hover:border-amber-500/50 rounded-lg px-3 py-2 cursor-pointer transition">
+                        <input id="quotaOnlyToggle" type="checkbox" class="w-4 h-4 text-amber-500 rounded border-slate-700 focus:ring-0">
+                        <span class="text-xs font-semibold text-amber-300">แสดงเฉพาะผู้ติดโควตา 33%</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="bg-slate-800/90 border border-slate-700 rounded-2xl shadow-xl overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-700/80 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-list-ol text-amber-400"></i>
+                    <h2 class="text-base font-bold text-white">บัญชีรายชื่อจัดเรียงตามลำดับอาวุโส</h2>
+                    <span id="resultCount" class="ml-2 text-xs bg-slate-700 text-slate-300 font-semibold px-2 py-0.5 rounded-full">266 รายการ</span>
+                </div>
+                <div class="text-xs text-slate-400">
+                    <span class="inline-block w-2.5 h-2.5 bg-amber-500 rounded-sm mr-1"></span>แถบสีทอง = ติดโควตาอาวุโส 33% ล้วน
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-900/90 text-xs uppercase text-slate-400 border-b border-slate-700">
+                        <tr>
+                            <th class="px-4 py-3.5 text-center w-16">อันดับ</th>
+                            <th class="px-4 py-3.5">ยศ - ชื่อ - สกุล</th>
+                            <th class="px-4 py-3.5">ตำแหน่ง / สังกัด</th>
+                            <th class="px-4 py-3.5 text-center">สายงาน</th>
+                            <th class="px-4 py-3.5 text-center">ครองตำแหน่งจริง</th>
+                            <th class="px-4 py-3.5 text-center">คุณสมบัติ</th>
+                            <th class="px-4 py-3.5 text-center">เกษียณ</th>
+                            <th class="px-4 py-3.5 text-center w-20">ดูข้อมูล</th>
+                        </tr>
+                    </thead>
+                    <tbody id="officersTableBody" class="divide-y divide-slate-700/60">
+                        <!-- Rows rendered via JS -->
+                        <tr>
+                            <td colspan="8" class="text-center py-12 text-slate-400">
+                                <i class="fa-solid fa-spinner fa-spin text-2xl text-amber-400 mb-2 block"></i>
+                                กำลังดึงข้อมูลจาก Supabase Cloud...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden p-12 text-center text-slate-400">
+                <i class="fa-solid fa-user-slash text-4xl text-slate-600 mb-3 block"></i>
+                <div class="text-base font-semibold text-slate-300">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</div>
+                <p class="text-xs text-slate-500 mt-1">ลองเปลี่ยนคำค้นหาหรือล้างตัวกรองเพื่อดูข้อมูลทั้งหมด</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal รายละเอียดข้าราชการตำรวจ -->
+    <div id="officerModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
+            <div class="bg-police-900 px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-id-badge text-amber-400 text-lg"></i>
+                    <h3 class="text-base font-bold text-white">รายละเอียดประวัติและลำดับอาวุโส</h3>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="modalBody" class="p-6 space-y-4 text-sm text-slate-300">
+                <!-- Injected by JavaScript -->
+            </div>
+
+            <div class="bg-slate-900 px-6 py-3 border-t border-slate-700 flex justify-end">
+                <button onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-police-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        <p>© 2569 บัญชีอาวุโสข้าราชการตำรวจ ตำรวจภูธรภาค 1 (ภ.1) • พัฒนาด้วย GitHub Pages + Supabase</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // 1. Supabase Configuration (ตามกฎในคอร์ส: ห้ามตั้งชื่อตัวแปรว่า supabase ซ้ำกับไลบรารีหลัก)
+        const SUPABASE_URL = 'https://ssqefntbtgrsizijiual.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_W7TkvIPN_0xRuupidpe3OQ_41i5rHfn';
+        
+        // Initializing client using window.supabase
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // State Variables
+        let allOfficers = [];
+        let filteredOfficers = [];
+
+        // DOM Elements
+        const tableBody = document.getElementById('officersTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const levelFilter = document.getElementById('levelFilter');
+        const provinceFilter = document.getElementById('provinceFilter');
+        const jobFamilyFilter = document.getElementById('jobFamilyFilter');
+        const quotaOnlyToggle = document.getElementById('quotaOnlyToggle');
+        const vacanciesInput = document.getElementById('vacanciesInput');
+        const quotaCalcResult = document.getElementById('quotaCalcResult');
+        const resultCount = document.getElementById('resultCount');
+
+        // Fetch Data from Supabase
+        async function fetchOfficers() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('police_officers')
+                    .select('*')
+                    .order('seniority_rank_in_level', { ascending: true });
+
+                if (error) throw error;
+
+                allOfficers = data || [];
+                updateStats(allOfficers);
+                applyFilters();
+            } catch (err) {
+                console.error('Fetch error:', err);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-8 text-rose-400">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl mb-2 block"></i>
+                            เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Update Stat Badges
+        function updateStats(data) {
+            document.getElementById('statTotal').innerText = data.length;
+            document.getElementById('statDeputy').innerText = data.filter(o => o.level === 'รอง ผกก.').length;
+            document.getElementById('statInsp').innerText = data.filter(o => o.level === 'สว.').length;
+            document.getElementById('statSubInsp').innerText = data.filter(o => o.level === 'รอง สว.').length;
+        }
+
+        // Apply Filters & Calculations
+        function applyFilters() {
+            const query = searchInput.value.trim().toLowerCase();
+            const level = levelFilter.value;
+            const province = provinceFilter.value;
+            const jobFamily = jobFamilyFilter.value;
+            const quotaOnly = quotaOnlyToggle.checked;
+            const vacancies = parseInt(vacanciesInput.value) || 0;
+            const quota = Math.ceil(vacancies * 0.33);
+            quotaCalcResult.innerText = quota;
+
+            filteredOfficers = allOfficers.filter(officer => {
+                // Level filter
+                if (level !== 'ALL' && officer.level !== level) return false;
+
+                // Province filter
+                if (province !== 'ALL' && officer.province !== province) return false;
+
+                // Job Family filter
+                if (jobFamily !== 'ALL') {
+                    const jf = (officer.job_family || '') + (officer.role_type || '');
+                    if (!jf.includes(jobFamily)) return false;
+                }
+
+                // Text search
+                if (query) {
+                    const matchText = `${officer.rank} ${officer.full_name} ${officer.position} ${officer.station} ${officer.province}`.toLowerCase();
+                    if (!matchText.includes(query)) return false;
+                }
+
+                // Quota 33% Filter
+                const isWithinQuota = officer.seniority_rank_in_level <= quota && officer.is_tenure_eligible;
+                if (quotaOnly && !isWithinQuota) return false;
+
+                return true;
+            });
+
+            renderTable(filteredOfficers, quota);
+        }
+
+        // Render Table
+        function renderTable(list, quota) {
+            resultCount.innerText = `${list.length} รายการ`;
+
+            if (list.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            let html = '';
+
+            list.forEach(officer => {
+                const isWithinQuota = officer.seniority_rank_in_level <= quota && officer.is_tenure_eligible;
+                const rowClass = isWithinQuota 
+                    ? 'bg-amber-950/25 hover:bg-amber-900/30 border-l-4 border-amber-500' 
+                    : 'hover:bg-slate-750/50 hover:bg-slate-800/60';
+
+                const rankBadge = isWithinQuota 
+                    ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500 text-police-900 shadow-sm">
+                         #${officer.seniority_rank_in_level} 🎖️ โควตา 33%
+                       </span>`
+                    : `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-700 text-slate-300">
+                         #${officer.seniority_rank_in_level}
+                       </span>`;
+
+                const tenureBadge = officer.is_tenure_eligible
+                    ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-950 text-emerald-300 border border-emerald-800">
+                         <i class="fa-solid fa-circle-check mr-1 text-[10px]"></i>ครบเกณฑ์
+                       </span>`
+                    : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-950 text-rose-300 border border-rose-800">
+                         <i class="fa-solid fa-circle-xmark mr-1 text-[10px]"></i>ไม่ครบ
+                       </span>`;
+
+                html += `
+                    <tr class="${rowClass} transition cursor-pointer" onclick="openModal(${officer.id})">
+                        <td class="px-4 py-3.5 text-center font-bold text-slate-200">
+                            ${rankBadge}
+                        </td>
+                        <td class="px-4 py-3.5">
+                            <div class="font-bold text-white flex items-center gap-1.5">
+                                <span>${officer.rank} ${officer.full_name}</span>
+                            </div>
+                            <div class="text-xs text-slate-400 mt-0.5">${officer.level} (${officer.target_promotion ? 'เลื่อนขึ้น ' + officer.target_promotion : ''})</div>
+                        </td>
+                        <td class="px-4 py-3.5">
+                            <div class="text-xs sm:text-sm text-slate-200 font-medium">${officer.position}</div>
+                            <div class="text-xs text-amber-400/80 mt-0.5">${officer.province || ''}</div>
+                        </td>
+                        <td class="px-4 py-3.5 text-center">
+                            <span class="inline-block px-2 py-0.5 rounded text-xs bg-slate-700/60 text-slate-300">
+                                ${officer.role_type || 'ทั่วไป'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-center">
+                            <div class="font-semibold text-white">${officer.current_rank_tenure_years || 0} ปี</div>
+                            <div class="text-[11px] text-slate-400">เกณฑ์ ${officer.required_tenure_years} ปี</div>
+                        </td>
+                        <td class="px-4 py-3.5 text-center">
+                            ${tenureBadge}
+                        </td>
+                        <td class="px-4 py-3.5 text-center text-xs text-slate-300 font-mono">
+                            ${officer.retirement_year_be || '-'}
+                        </td>
+                        <td class="px-4 py-3.5 text-center">
+                            <button class="text-amber-400 hover:text-amber-300 transition text-sm">
+                                <i class="fa-solid fa-circle-info text-base"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = html;
+        }
+
+        // Modal Handler
+        function openModal(id) {
+            const officer = allOfficers.find(o => o.id === id);
+            if (!officer) return;
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="text-center pb-4 border-b border-slate-700">
+                    <div class="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center mx-auto mb-2 text-2xl text-amber-400">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-white">${officer.rank} ${officer.full_name}</h4>
+                    <p class="text-xs text-amber-400 font-medium">${officer.position}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
+                        <div class="text-[11px] text-slate-400">ลำดับอาวุโสในระดับ</div>
+                        <div class="text-base font-bold text-amber-300">#${officer.seniority_rank_in_level} (${officer.level})</div>
+                    </div>
+                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
+                        <div class="text-[11px] text-slate-400">เป้าหมายการแต่งตั้ง</div>
+                        <div class="text-base font-bold text-emerald-300">${officer.target_promotion || '-'}</div>
+                    </div>
+                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
+                        <div class="text-[11px] text-slate-400">ระยะเวลาครองตำแหน่งจริง</div>
+                        <div class="text-sm font-semibold text-white">${officer.current_rank_tenure_years || 0} ปี (เกณฑ์ ${officer.required_tenure_years} ปี)</div>
+                    </div>
+                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
+                        <div class="text-[11px] text-slate-400">อายุราชการสัญญาบัตร</div>
+                        <div class="text-sm font-semibold text-white">${officer.total_service_years || 0} ปี</div>
+                    </div>
+                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
+                        <div class="text-[11px] text-slate-400">อายุตัว</div>
+                        <div class="text-sm font-semibold text-white">${officer.age_years || '-'} ปี</div>
+                    </div>
+                    <div class="bg-slate-900/70 p-2.5 rounded-lg border border-slate-700">
+                        <div class="text-[11px] text-slate-400">ปีเกษียณอายุราชการ</div>
+                        <div class="text-sm font-semibold text-amber-400 font-mono">พ.ศ. ${officer.retirement_year_be || '-'} (เหลือ ${officer.years_until_retirement || '-'} ปี)</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/70 p-3 rounded-lg border border-slate-700 text-xs space-y-1.5">
+                    <div class="font-semibold text-slate-300">วันที่มีผลครองตำแหน่งในอดีต (ISO):</div>
+                    <div class="flex justify-between text-slate-400"><span>ครอง รอง ผกก.:</span> <span class="font-mono text-slate-200">${officer.deputy_date_iso || '-'}</span></div>
+                    <div class="flex justify-between text-slate-400"><span>ครอง สารวัตร (สว.):</span> <span class="font-mono text-slate-200">${officer.insp_date_iso || '-'}</span></div>
+                    <div class="flex justify-between text-slate-400"><span>ครอง รอง สว. (สัญญาบัตร):</span> <span class="font-mono text-slate-200">${officer.subinsp_date_iso || '-'}</span></div>
+                </div>
+            `;
+
+            document.getElementById('officerModal').classList.remove('hidden');
+            document.getElementById('officerModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('officerModal').classList.add('hidden');
+            document.getElementById('officerModal').classList.remove('flex');
+        }
+
+        // Close on Escape key
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Event Listeners
+        searchInput.addEventListener('input', applyFilters);
+        levelFilter.addEventListener('change', applyFilters);
+        provinceFilter.addEventListener('change', applyFilters);
+        jobFamilyFilter.addEventListener('change', applyFilters);
+        quotaOnlyToggle.addEventListener('change', applyFilters);
+        vacanciesInput.addEventListener('input', applyFilters);
+
+        // Initial Load
+        fetchOfficers();
+    </script>
+</body>
+</html>
