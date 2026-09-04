@@ -440,6 +440,15 @@
                     <div id="rpcaResultBox" class="bg-purple-950/40 border border-purple-700/50 rounded-xl p-4 text-sm text-purple-200">
                         <!-- Injected by JS -->
                     </div>
+
+                    <!-- Case Study Forensic Audit Note -->
+                    <div class="bg-amber-950/40 border border-amber-500/40 rounded-xl p-3 text-xs text-amber-200 flex items-start gap-2.5">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-base mt-0.5 flex-shrink-0"></i>
+                        <div class="leading-relaxed">
+                            <span class="font-bold text-amber-300">มาตรฐานข้อเท็จจริงตามบทเรียนกรณีศึกษา (Case Study Grounding Protocol):</span>
+                            ตารางนี้แสดงสูตรคณิตศาสตร์ความสัมพันธ์ระหว่างปี พ.ศ. จบการศึกษา กับรุ่น นรต. และ ตท. <strong>ข้าราชการตำรวจที่บรรจุสัญญาบัตร (ร.ต.ต.) ในปีเดียวกัน ไม่ได้จบจากโรงเรียนนายร้อยตำรวจ (นรต.) ทุกนาย</strong> เนื่องจากมีสายสอบสวน (นบ.ตร.), สายบุคคลภายนอก (กอต.) และสายเลื่อนชั้นประทวน (กอน.) <em>ห้ามนำปีบรรจุสัญญาบัตรไปอนุมานว่าเป็นรุ่น นรต. โดยเด็ดขาด</em>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -448,15 +457,16 @@
                 <div class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-grow">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                        <input id="rpcaSearchInput" type="text" placeholder="พิมพ์ค้นหาเลขรุ่น, ปี พ.ศ., หรือชื่อบุคคลสำคัญ (เช่น กิตติ์รัฐ, นราเดช, นิรุธ)..."
+                        <input id="rpcaSearchInput" type="text" placeholder="พิมพ์ค้นหาเลขรุ่น, ปี พ.ศ., หรือชื่อบุคคลสำคัญที่มีประวัติทางการ..."
                                class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-purple-400">
                     </div>
                     <div class="flex flex-wrap gap-1.5">
                         <button onclick="filterRpcaCategory('ALL')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-950 text-purple-300 border border-purple-700 hover:bg-purple-900 transition">ทั้งหมด (1-83)</button>
-                        <button onclick="filterRpcaCategory('LEADERS')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">👑 ผู้นำ ตร./ภ.1 (35-45)</button>
-                        <button onclick="filterRpcaCategory('COMMANDERS')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">🏛️ ผบก./ผกก. (46-54)</button>
-                        <button onclick="filterRpcaCategory('DEPUTIES')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">👮 รอง ผกก./สว. (55-65)</button>
-                        <button onclick="filterRpcaCategory('ACTIVE')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">🌟 รอง สว. ถึงปีนี้ (66-79)</button>
+                        <button onclick="filterRpcaCategory('RETIRED')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">เกษียณแล้ว (1-35)</button>
+                        <button onclick="filterRpcaCategory('SENIOR_30')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">ราชการ 30 ปีขึ้นไป (36-47)</button>
+                        <button onclick="filterRpcaCategory('SENIOR_20')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">ราชการ 20-29 ปี (48-57)</button>
+                        <button onclick="filterRpcaCategory('MID_10')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">ราชการ 10-19 ปี (58-67)</button>
+                        <button onclick="filterRpcaCategory('JUNIOR')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">ราชการไม่เกิน 10 ปี (68-79)</button>
                         <button onclick="filterRpcaCategory('STUDENTS')" class="rpca-cat-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition">🎓 นรต. ปัจจุบัน (80-83)</button>
                     </div>
                 </div>
@@ -884,11 +894,12 @@
             const query = (rpcaSearchInput ? rpcaSearchInput.value.trim().toLowerCase() : '');
 
             const filtered = allRpca.filter(r => {
-                // Category Filter
-                if (currentRpcaCategory === 'LEADERS' && (r.rpca_class < 35 || r.rpca_class > 45)) return false;
-                if (currentRpcaCategory === 'COMMANDERS' && (r.rpca_class < 46 || r.rpca_class > 54)) return false;
-                if (currentRpcaCategory === 'DEPUTIES' && (r.rpca_class < 55 || r.rpca_class > 65)) return false;
-                if (currentRpcaCategory === 'ACTIVE' && (r.rpca_class < 66 || r.rpca_class > 79)) return false;
+                // Purely Factual Category Filter
+                if (currentRpcaCategory === 'RETIRED' && r.rpca_class > 35) return false;
+                if (currentRpcaCategory === 'SENIOR_30' && (r.rpca_class < 36 || r.rpca_class > 47)) return false;
+                if (currentRpcaCategory === 'SENIOR_20' && (r.rpca_class < 48 || r.rpca_class > 57)) return false;
+                if (currentRpcaCategory === 'MID_10' && (r.rpca_class < 58 || r.rpca_class > 67)) return false;
+                if (currentRpcaCategory === 'JUNIOR' && (r.rpca_class < 68 || r.rpca_class > 79)) return false;
                 if (currentRpcaCategory === 'STUDENTS' && (r.rpca_class < 80 || r.rpca_class > 83)) return false;
 
                 // Text Search
