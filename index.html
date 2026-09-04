@@ -172,7 +172,7 @@
                         </div>
                         <div class="border-l border-slate-700 pl-3">
                             <span class="block text-xs text-slate-400 mb-1">โควตาอาวุโส 33%</span>
-                            <span id="quotaCalcResult" class="text-xl font-extrabold text-amber-400">4</span>
+                            <span id="quotaCalcResult" class="text-xl font-extrabold text-amber-400">3</span>
                             <span class="text-xs text-slate-400">นาย</span>
                         </div>
                     </div>
@@ -609,7 +609,7 @@
             const jobFamily = jobFamilyFilter.value;
             const quotaOnly = quotaOnlyToggle.checked;
             const vacancies = parseInt(vacanciesInput.value) || 0;
-            const quota = Math.ceil(vacancies * 0.33);
+            const quota = Math.floor(vacancies * 0.33);
             quotaCalcResult.innerText = quota;
 
             const filtered = allOfficers.filter(officer => {
